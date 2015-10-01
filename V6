@@ -1,0 +1,647 @@
+@echo off
+title Easy Migation Tool v 6.0.0 
+
+
+
+cls
+
+REM Script de migracion de equipos Windows
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+
+echo                ****** Easy Migration Tool ****** 
+echo                            v 6.0.0
+echo.
+echo.
+echo.
+
+echo        Script para migracion de perfiles y Configuraciones
+echo.
+echo.
+echo.
+
+echo        Realizado por:
+echo.
+echo.
+echo.
+        
+echo        vrodasjj
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+pause
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+cls
+
+
+:: Menu
+
+:main
+
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+
+echo              *****************************************************
+echo              **                                                 **
+echo              **                  MENU PRINCIPAL                 **
+echo              **                                                 **
+echo              *****************************************************
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+
+
+
+
+::Eleccion de metodo
+::Choose method
+
+    :SP1aEleccion
+    set/p eleccion=Selecione que desea hacer: 1=Backup 2=Restore 3=Salir     
+
+    if "%eleccion%"=="1" goto Backup
+    if "%eleccion%"=="2" goto Restore
+    if "%eleccion%"=="" goto eleccion2
+    goto end
+    
+    ::Control de error
+    ::Error control
+    :eleccion2
+    Eleccion2
+    set/p eleccion=Eleccion no valida. Selecione que desea hacer: 1=Backup 2=Restore 3=Salir     
+
+    if "%eleccion%"=="1" goto Backup
+    if "%eleccion%"=="2" goto Restore
+    if "%eleccion%"=="3" goto end
+    if not "%eleccion%"==("1","2","3") goto eleccion2
+    goto end
+
+        :: Comienzo del Backup en Espa?ol
+        :: Start Spanish Backup
+        
+        : Backup
+cls
+        echo                ****** Easy Backup Tool ****** 
+        ECHO                          v 5.0.0
+        echo.
+        echo.
+        echo.
+
+        echo        Script para migracion de perfiles y Configuraciones
+        echo.
+        echo.
+        echo.
+
+        echo        Relizado por:
+        echo.
+        echo.
+        echo.
+                
+        echo        vrodasjj
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+                
+        pause 
+        cls
+        
+
+        echo BACKUP INICIAL
+        echo.
+        echo.
+        echo !!!! AVISO!!!!!!!! 
+        echo Antes de continuar
+        echo Asegurese de estar logado con el usuario a migrar.
+        echo.
+        echo.
+        echo.
+
+        pause
+        
+
+        :seleccion
+        cls
+
+        :: Verificacion de usuario
+        :: User check
+
+
+        set /p verif=Se encuentra logado con el usuario correcto. 1=Si 2=No    
+        If "%verif%"=="1" (goto Backup2) else goto verificacion
+
+
+        :verificacion
+        cls
+        echo VD. ha indicado no estar logado en el perfil a migrar, o ha pulsado una opcion incorrecta.
+        echo Por favor, pulse cualquier tecla para volver a elegir y seleccione la opcion correcta.
+        pause>nul
+        cls
+        Set /p verif=Se encuentra logado con el usuario correcto. 1=Si, Otra tecla=Salir
+        If "%verif%"=="1" (goto seleccion) else goto end
+                     
+
+        :Backup2
+        cls
+
+        ::Informacion al usuario
+        :: User information
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo Este programa copiara a continuacion las carpetas de el perfil de el usuario actual.
+        echo Si necesita copiar carpetas de otra ubicacion se le solicitara mas adelante. 
+        echo Asegurese de tenerlas todas en la misma ubicacion.
+        echo Presione una tecla cuando este listo para copiar el perfil.
+        echo.
+        echo.
+        pause>nul
+        set/p Rutabackup=Introduzca la ruta donde desee realizar el backup:  
+        echo.
+        echo.
+        echo.
+        echo.
+        echo Va a iniciarse la copia de archivos de el perfil.
+        echo.
+        echo.
+        echo.
+        pause
+        cls
+        echo.
+        md "%RutaBackup%\Logs"
+        xcopy "%userprofile%\*.*" "%RutaBackup%\profile\" /i /e /k /r /g /c /z /y>"%RutaBackup%\Logs\CopiaPerfil.log"
+        
+        cls
+        
+        
+        :mail
+        echo.
+        echo.
+        echo.
+        echo.
+        echo Va a iniciarse la copia de archivos de correo.
+        echo.
+        echo.
+        pause
+        :: Copia de perfiles y cuentas de correo
+        :: Backup profiels and accounts 
+        md "%rutabackup%\backup_outlook"
+
+        reg export "HKCU\Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles" "%RutaBackup%\backup_outlook\profileOutlook.reg">"%RutaBackup%\Logs\CopiaPerfilesOutlook.log"
+
+        xcopy "%appdata%\AppData\Roaming\Microsoft\Signatures\*.*" "%RutaBackup%\backup_outlook\signatures\" /i /e /k /r /g /c /h /z /y>"%RutaBackup%\Logs\CopiaFirmaOutlook.log"
+
+        xcopy "%appdata%\AppData\Microsoft\Outlook\*.*" "%RutaBackup%\backup_outlook\"/i /e /k /r /g /c /h /z /y>"%RutaBackup%\Logs\CopiaNK2.log"
+
+        xcopy "%userprofile%\AppData\local\Microsoft\Outlook\*.pst" "%RutaBackup%\backup_outlook\pst" /i /e /k /r /g /c /h /z /y>"%RutaBackup%\Logs\CopiaPST.log"
+
+        :: Backup VPN
+
+        xcopy "%userprofile%\AppData\Roaming\Microsoft\Network\Connections\Pbk\*.pbk" "%RutaBackup%\VPN" /i /e /k /r /g /c /h /z /y>"%RutaBackup%\Logs\VPNBackup.log"
+
+
+        goto backconf
+
+        
+        ::Backup de configuraciones
+        ::Config Backup 
+        :backconf
+        cls
+        echo La operacion de copia se ha realizado, revise los archivos de Log,en "carpeta de destino del backup\logs" para ver posibles errores.  
+        echo.
+        echo.
+        echo Se va a proceder a copiar el resto de Configuraciones.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+
+        cls
+
+        REM //Printers
+        net stop spooler
+
+        xcopy "%windir%\system32\spool\*.*" /i /e /k /r /g /c /h /z /y "%RutaBackup%\prnts\">"%RutaBackup%\Logs\Printersfilesbackup.log"
+        reg export HKLM\System\CurrentControlSet\Control\Print\Printers "%RutaBackup%\printers.reg">"%RutaBackup%\Logs\exportPrinter.log"
+
+        net start spooler
+
+
+        REM //NET DRIVES
+
+        reg export HKCU\Network "%RutaBackup%\networkdrives.reg">"%RutaBackup%\Logs\ExportNetworkDrives.log"
+
+        REM //ODBC USER
+
+        reg export HKCU\Software\ODBC "%RutaBackup%\ODBCUSER.reg">"%RutaBackup%\Logs\ExportODBCUser.log"
+
+        REM //ODBC System
+
+        reg export HKLM\Software\ODBC "%RutaBackup%\ODBCSYSTEM.reg">"%RutaBackup%\Logs\ExportODCSystem.log"
+
+        
+        
+        REM //SERVICES STATE
+        
+        reg export HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services "%RutaBackup%\services.reg">"%RutaBackup%\Logs\services.log"
+
+        echo La operacion de copia se ha realizado, revise los archivos de Log,en "carpeta de destino del backup\logs" para ver posibles errores. 
+        echo.
+        echo.
+        echo.
+
+        pause
+
+        cls
+
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        
+        :: Backup extra Espa?ol
+        :: Extra Backup Spanish
+        :QuestExtraBackup
+        echo Si lo desea puede a?adir mas carpetas al Backup.
+        echo.
+        echo.
+
+
+
+        set/p extrabckp= Desea a?adir mas carpetas? 1=Si 0=Salir 
+
+        If "%extrabckp%"=="1" (goto extrabackup) else goto end
+              
+
+
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        
+        
+        :extrabackup
+
+
+        set/p RutabackupExtra=Introduzca la ruta de la carpeta que desee realizar el backup:   
+        xcopy "%RutabackupExtra%\*.*" "%RutaBackup%\extra" /i /e /k /r /g /c /h /z /y>"%RutaBackup%\Logs\CopiaExtra.log"
+        if %RutabackupExtra%"=="" goto verificacion2
+
+        echo La operacion de copia se ha realizado, revise los archivos de Log,en "carpeta de destino del backup \logs" para ver posibles errores 
+        goto QuestExtraBackup
+
+        :verificacion2
+        cls
+        echo VD. ha indicado una opcion no valida.
+        set/p verifextra=Por favor, pulse 1 para volver a elegir y seleccione la opcion correcta o pulse 0 para salir del programa.
+        If "%verifextra%"=="1" goto extrabackup
+        if "%verifextra%"=="0" goto end   
+
+
+        cls
+
+        :: Restaurar datos Espa?ol
+        :: Spanish languge Restore
+        :Restore
+
+
+
+
+        echo Ha elegido Restaurar
+
+        cls
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+
+        echo                ****** Easy Restore Tool ****** 
+        ECHO                            v 5.0.0
+        echo.
+        echo.
+        echo.
+
+        echo        Script de restauracion de datos y Configuraciones
+        echo.
+        echo.
+        echo.
+
+        echo        Relizado por:
+        echo.
+        echo.
+        echo.
+                
+        echo        vrodasjj
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+                
+        pause
+        cls
+        ::Informacion al usuario
+        :: User information
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo Este programa restaurara a continuacion las carpetas del perfil del usuario actual.
+        echo Si necesita restaurar carpetas de otra ubicacion se le solicitara mas adelante. 
+
+        echo Presione una tecla cuando este listo para copiar el perfil.
+        echo.
+        echo.
+        pause>nul
+        set/p Rutarestore=Introduzca la ruta donde se encuentre el backup:   
+        echo.
+        echo.
+        echo.
+        echo.
+        echo Va a iniciarse la restauracion de archivos del perfil.
+        echo.
+        echo.
+        echo.
+        pause
+        cls
+        echo.
+
+       
+
+        
+
+        echo Va a iniciarse la restauracion de archivos de correo.
+        echo.
+        echo.
+        pause
+        
+        reg import "%Rutarestore%\backup_outlook\profileOutlook.reg">"%Rutarestore%\Logs\RestorePerfilesOutlook.log"
+        
+        ::Comprobacion de carpetas
+        ::Check folders
+        set/p foldersig=="%appdata%\AppData\Roaming\Microsoft\Signatures"
+        if not exist "%foldersig%" goto createsig
+        :createsig
+        md "%appdata%\AppData\Roaming\Microsoft\Signatures"
+
+        set/p folderpst="%userprofile%\AppData\local\Microsoft\Outlook"
+        if not exist "%folderpst%" goto createpst
+
+        :createpst
+        md "%userprofile%\AppData\local\Microsoft\Outlook"
+
+        set/p foldernk2="%appdata%\AppData\Microsoft\Outlook"
+        if not exist "%foldernk2%" goto createnk2
+
+        :createnk2
+        md "%appdata%\AppData\Microsoft\Outlook"
+
+
+        xcopy "%Rutarestore%\backup_outlook\signatures\*.*" "%appdata%\AppData\Roaming\Microsoft\Signatures\" /i /s /e /k /z /r /c/y>"%Rutarestore%\Logs\RestoreFirmaOutlook.log"
+
+        xcopy "%Rutarestore%\backup_outlook\*.nk2" "%appdata%\AppData\Microsoft\Outlook\" /i /s /e /k /z /r /c/y>"%Rutarestore%\Logs\RestoreNK2.log"
+
+        xcopy "%Rutarestore%\backup_outlook\*.pst" "%userprofile%\AppData\local\Microsoft\Outlook\*.pst" /i /s /e /k /z /r /c/y>"%Rutarestore%\Logs\RestorePST.log"
+
+        :: Restore perfil
+        
+        xcopy "%Rutarestore%\profile\*.*" "%userprofile%\" /i /s /e /k /z /r /c /y>"%Rutarestore%\Logs\restoreescritorio.log"
+        ::xcopy "%Rutarestore%\profile\favorites\" "%userprofile%\favorites" /i /s /e /k /z /r /c /y>"%Rutarestore%\Logs\restorefavoritos.log"
+        ::xcopy "%Rutarestore%\profile\docume~1\" "%userprofile%\docume~1" /i /s /e /k /z /r /c /y>"%Rutarestore%\Logs\restoremisdocumentos.log"
+        
+    goto restoreconf
+        
+        
+      :restoreconf
+
+        cls
+        echo La operacion de copia se ha realizado, revise los archivos de Log,en "carpeta del backup de origen\logs" para ver posibles errores.
+        echo.
+        echo.
+        echo Se va a proceder a restaurar el resto de Configuraciones.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        pause
+        cls
+        ::RestoreVPN
+        :: Restore VPN
+
+        xcopy "%Rutarestore%\VPN\*.pbk" "%userprofile%\AppData\Roaming\Microsoft\Network\Connections\Pbk\" /i /e /k /r /g /c /h /z /y>"%Rutarestore%\Logs\VPNRestore.log"
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo VPN Restauradas
+
+        pause
+
+        reg import "%Rutarestore%\backup_outlook\profileOutlook.reg">"%Rutarestore%\Logs\RestorePerfilesOutlook.log"
+
+        REM //Printers
+        net stop spooler
+
+        xcopy "%Rutarestore%\prnts\*.*" /l /i /e /k /r /g /c /h /x /f /y "%windir%\system32\spool\">"%Rutarestore%\Logs\PrntFilesImport.log"
+        reg import "%Rutarestore%\printers.reg">"%Rutarestore%\Logs\ImportPrinter.log"
+        net start spooler
+        REM //NET DRIVES
+
+        reg import "%Rutarestore%\networkdrives.reg">"%Rutarestore%\Logs\ImportNetworkDrives.log"
+
+        REM //ODBC USER
+
+        reg import "%Rutarestore%\ODBCUSER.reg">"%Rutarestore%\Logs\ImportODBCUser.log"
+
+        REM //ODBC System
+
+        reg import "%Rutarestore%\ODBCSYSTEM.reg">"%Rutarestore%\Logs\ImportODCSystem.log"
+        
+        
+        REM //ODBC System
+
+        reg import HKLM\Software\ODBC "%RutaBackup%\ODBCSYSTEM.reg">"%RutaBackup%\Logs\ExportODCSystem.log"
+
+        
+
+        echo La operacion de restauracion se ha realizado, revise los archivos de Log,en "carpeta de origen del backup\logs" para ver posibles errores.
+        echo.
+        echo.
+        echo.
+
+        pause
+
+
+
+
+
+        cls
+
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+
+        echo Si lo desea puede a?adir mas carpetas a la restauracion.
+        echo.
+        echo.
+
+
+
+        set/p extrarest=Desea a?adir mas carpetas? 1==Si 0==Salir 
+
+        If "%extrarest%"=="1" (goto extrarest) else goto end
+              
+
+
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        echo.
+        ::copia de carpetas extra
+        :extrarest
+
+
+        set/p RutabackupExtra=Introduzca la ruta de la carpeta que desee realizar la restauracion:      
+        set/p RutaDestino==Introduzca la ruta de destino:       
+        xcopy "%RutarestoreExtra%\extra\*.*" "%RutaDestino%\" /l /i /e /k /r /g /c /h /x /f /y>"%Rutarestore%\Logs\RestoreExtra.log"
+        if %RutarestoreExtra%="" goto verifextra
+
+        echo La Copia extra ha terminado, con
+
+
+        :verifextra
+        cls
+        echo VD. ha indicado una opcion no valida.
+        set/p verifextra=Por favor, pulse 1 para volver a elegir y seleccione la opcion correcta o cualquier otra tecla para salir.
+        if "%verifextra%"=="1" goto extrarest
+        if "%verifextra%"=="0" goto end
+        if "%verifextra%"==""  goto extrarest
+        goto end
+        
+        
+        
+
+
+
+
+    :errormain
+
+cls
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo Su seleccion esta vacia o es erronea, por favor introduzca un leguaje.
+echo.
+echo.
+echo.
+pause
+goto main
+
+
+
+
+
+
+:: end y creditos
+:: end and credits
+:end
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo                 Esta herramienta es de uso libre y gratuito.
+echo           Su distribucion, no esta permitida con fines lucrativos.
+echo Esta permitida la distribucion y modificacion del codigo de esta aplicacion,
+echo                   a?adiendo mencion a el autor original.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo               Codigo y compilacion realizada por: Vrodasjj
+echo.
+echo.
+echo.
+echo.
+pause
+
+
+exit
+        
+
+
+
+
+        
